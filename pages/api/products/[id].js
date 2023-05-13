@@ -18,4 +18,14 @@ export default async function handler(req, res) {
     }
   };
 
+
+  if (method === "DELETE") {
+    try {
+      const products = await Products.findByIdAndDelete(id);
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  };
+
 };

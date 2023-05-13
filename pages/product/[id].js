@@ -10,24 +10,26 @@ const Product = ({ d }) => {
   const [size, setSize] = useState(0)
   const [ext, setExt] = useState([])
   const [selectedPizza, setSelectedPizza] = useState(0)
-
+  const [cartId, setCartId] = useState(Math.floor((Math.random() * 100000000000) + 1))
 
   //items for cart
   const cartItem = {
     name: d.name,
     des: d.des,
     img: d.img,
+    id: cartId,
     pizzaSize: size,
     extra: "",
     price,
     quantity,
     ext
   }
-
+  
   //add to cart
   const handleAddToCart = () => {
+    setCartId(Math.floor((Math.random() * 100000000000) + 1));
     setCartQuantity([...cartQuantity, cartItem]);
-
+    
   };
 
   //change pizza size

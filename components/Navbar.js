@@ -46,6 +46,9 @@ const Navbar = () => {
               <Link href="/" className="font-semibold">
                 Contact
               </Link>
+              <Link href="/dashboard" className="font-semibold">
+                Dashboard
+              </Link>
             </div>
           </div>
           <Link href='/cart' className="relative">

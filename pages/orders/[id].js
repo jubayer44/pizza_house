@@ -1,17 +1,14 @@
-import {
-  CheckCircleIcon,
-  ClockIcon,
-  TruckIcon,
-  XCircleIcon,
-} from "@heroicons/react/outline";
+import { CheckCircleIcon, } from "@heroicons/react/outline";
 
 import styles from '../../styles/Order.module.css';
 import Image from "next/image";
+import axios from "axios";
 
 
 
-const OrderPage = () => {
-const status = 0;
+const OrderPage = ({data}) => {
+  const order = data
+const status = order?.status;
 
   const statusClass = (index) => {
     if (index - status < 1) return styles.done;
@@ -29,19 +26,19 @@ const status = 0;
         <div className="flex justify-between gap-10 items-center border-b-2 pb-4">
           <div>
             <p className="font-bold">Order ID</p>
-            <p>312943780243</p>
+            <p>{order?._id}</p>
           </div>
           <div>
             <p className="font-bold">Customer</p>
-            <p>John</p>
+            <p>{order?.customer}</p>
           </div>
           <div>
             <p className="font-bold">Address</p>
-            <p>ste 340 Ashburn, VA</p>
+            <p>{order?.address}</p>
           </div>
           <div>
             <p className="font-bold">Total</p>
-            <p>$50</p>
+            <p>${order?.total}</p>
           </div>
         </div>
         
@@ -85,17 +82,17 @@ const status = 0;
       <div className="mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3">
           <div className="mb-2 flex justify-between">
             <p className="text-gray-700">Subtotal</p>
-            <p className="text-gray-700">$129.99</p>
+            <p className="text-gray-700">${order?.total}</p>
           </div>
           <div className="flex justify-between">
             <p className="text-gray-700">Shipping</p>
-            <p className="text-gray-700">$4.99</p>
+            <p className="text-gray-700">$0.00</p>
           </div>
           <hr className="my-4" />
           <div className="flex justify-between">
             <p className="text-lg font-bold">Total</p>
             <div className="">
-              <p className="mb-1 text-lg font-bold">$134.98 USD</p>
+              <p className="mb-1 text-lg font-bold">${order?.total} USD</p>
               <p className="text-sm text-gray-700">including VAT</p>
             </div>
           </div>
@@ -108,4 +105,17 @@ const status = 0;
   );
 };
 
+
 export default OrderPage;
+
+export async function getServerSideProps({ params }) {
+  const res = await axios.get(`http://localhost:3000/api/orders/${params.id}`)
+  return {
+    props: {
+      data: res?.data
+    }
+  }
+}
+
+
+
