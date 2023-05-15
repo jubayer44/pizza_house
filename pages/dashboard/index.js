@@ -2,14 +2,28 @@ import { TrashIcon, PencilIcon } from "@heroicons/react/outline";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useState } from "react";
+import { useState } from "react";
 
 const Dashboard = ({ products, orders }) => {
-  const [status, setStatus] = useState(0);
+  const [loadingId, setLoadingId] = useState({});
   const router = useRouter();
 
-  const handleStates = () => {
-    setStatus(status + 1);
+  const handleStates = async(id) => {
+    const findStatus = orders?.find(order => order?._id === id)
+    const newStatus = findStatus?.status;
+    setLoadingId({id, newStatus})
+
+    try {
+      const res = await axios.put('http://localhost:3000/api/orders/' + id, {status: newStatus +1})
+      if(res.status === 200) {
+        router.replace(router.asPath);
+        setLoadingId('');
+      }
+    }
+    catch(err) {
+      setLoadingId('');
+      console.log(err) 
+    }
   };
 
   //delete products
@@ -164,15 +178,16 @@ const Dashboard = ({ products, orders }) => {
                               (order?.status >= 3 && "Delivered")}
                           </div>
                         </td>
-                        <td className="p-2 whitespace-nowrap">
-                          <button className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs">
+                        <td className="p-2 whitespace-nowrap flex">
+                          <div className={`text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs ${order?.status >= 3 && "hidden"}`}>
                             Cancel
-                          </button>
+                          </div>
                           <button
-                            onClick={handleStates}
-                            className="text-white font-bold px-2 py-1 rounded-md bg-green-500 text-xs ml-2"
+                          disabled={order?.status >= 3}
+                            onClick={()=> handleStates(order?._id)}
+                            className="text-white font-bold px-2 w-[60px] text-center py-1 rounded-md bg-green-500 text-xs ml-2 cursor-pointer"
                           >
-                            Next
+                            {loadingId?.id === order?._id ? <div className="w-4 h-4 mx-auto border-4 border-dashed rounded-full animate-spin"></div> : <>{order?.status >= 3 ? "done" : "Next"}</> }
                           </button>
                         </td>
                       </tr>
@@ -188,7 +203,20 @@ const Dashboard = ({ products, orders }) => {
   );
 };
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
+
+  const myCookie = context?.req?.cookies || "";
+
+  if(myCookie?.token !== process.env.TOKEN){
+    return {
+      redirect: {
+        destination: "/dashboard/login",
+        permanent: false,
+      }
+    }
+  }
+
+
   const res = await axios.get("http://localhost:3000/api/products");
   const response = await axios.get("http://localhost:3000/api/orders");
   return {

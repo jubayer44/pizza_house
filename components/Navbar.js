@@ -1,12 +1,27 @@
 import Image from "next/image";
-import React, { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import phoneLogo from "../public/Images/telephone.png";
 import cartImg from "../public/Images/cart.png";
 import { AppContext } from "pages/_app";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
-  const {cartQuantity} = useContext(AppContext);
+  const { cartQuantity } = useContext(AppContext);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const tkn = process.env.NEXT_PUBLIC_TOKEN
+useEffect(() => {
+  const cookies = document.cookie.split("; ");
+const tokenCookie = cookies.find((cookie) => cookie.startsWith("token="));
+const token = tokenCookie ? tokenCookie.split("=")[1] : null;
+if(token === tkn){
+  setIsAdmin(true)
+}
+}, [isAdmin])
+  const handleLogOut = () => {
+    document.cookie = "token=; max-age=0; path=/";
+  };
 
   return (
     <div className="py-4 px-4 bg-pink-600 text-white">
@@ -46,12 +61,22 @@ const Navbar = () => {
               <Link href="/" className="font-semibold">
                 Contact
               </Link>
-              <Link href="/dashboard" className="font-semibold">
+              <Link
+                href="/dashboard"
+                className={`font-semibold ${!isAdmin && "hidden"}`}
+              >
                 Dashboard
+              </Link>
+              <Link
+                onClick={handleLogOut}
+                href="/"
+                className={`font-semibold ${!isAdmin && "hidden"}`}
+              >
+                Log Out
               </Link>
             </div>
           </div>
-          <Link href='/cart' className="relative">
+          <Link href="/cart" className="relative">
             <Image className="h-11 w-11 p-2" src={cartImg} alt="phoneLogo" />
             <p className="bg-white text-pink-600 rounded-full px-2 font-bold absolute -top-2 -right-2">
               {cartQuantity.length}

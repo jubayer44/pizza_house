@@ -1,11 +1,18 @@
-import Head from 'next/head'
-import Banner from '../components/Banner';
-import ProductList from '../components/ProductList';
-import axios from 'axios'
+import Head from "next/head";
+import Banner from "../components/Banner";
+import ProductList from "../components/ProductList";
+import axios from "axios";
+import { useContext, useEffect } from "react";
+import { AppContext } from "./_app";
+import { useRouter } from "next/router";
 
-export default function Home({data}) {
+export default function Home({ data, admin }) {
+  const { setIsAdmin} = useContext(AppContext);
+  const router = useRouter();
 
-
+  useEffect(()=> {
+    setIsAdmin(admin)
+  }, [router?.pathname])
   return (
     <div>
       <Head>
@@ -15,20 +22,26 @@ export default function Home({data}) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={``}>
-        <Banner/>
-        <ProductList allProducts={data}/>
+        <Banner />
+        <ProductList allProducts={data} />
       </main>
     </div>
-  )
+  );
 }
 
-export async function getServerSideProps() {
-  const res = await axios.get(`http://localhost:3000/api/products`);
-  
+export async function getServerSideProps(ctx) {
+  const myCookie = ctx.req?.cookies || "";
+  let admin = false;
 
+  if (myCookie.token === process.env.TOKEN) {
+    admin = true;
+  }
+
+  const res = await axios.get(`http://localhost:3000/api/products`);
   return {
     props: {
       data: res.data,
+      admin,
     },
   };
 }
