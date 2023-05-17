@@ -1,56 +1,93 @@
+import AddNewProduct from "@components/AddNewProduct";
+import DeleteModal from "../../components/DeleteModal";
+import toast, { Toaster } from "react-hot-toast";
 import { TrashIcon, PencilIcon } from "@heroicons/react/outline";
 import axios from "axios";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import { useState } from "react";
+import { QueryClient, dehydrate, useQuery } from "react-query";
 
-const Dashboard = ({ products, orders }) => {
+const Dashboard = ({ dehydratedState }) => {
+  let products = dehydratedState.queries[0]?.state?.data;
+  let orders = dehydratedState.queries[1]?.state?.data;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productId, setProductId] = useState(null);
   const [loadingId, setLoadingId] = useState({});
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleStates = async(id) => {
-    const findStatus = orders?.find(order => order?._id === id)
+  const { data: productsData, refetch: refetchProducts } = useQuery(
+    "products",
+    () =>
+      axios.get("http://localhost:3000/api/products").then((res) => res.data)
+  );
+  products = productsData;
+
+  const { data: ordersData, refetch: refetchOrders } = useQuery("orders", () =>
+    axios.get("http://localhost:3000/api/orders").then((res) => res.data)
+  );
+  orders = ordersData;
+
+  const handleStates = async (id) => {
+    const findStatus = orders?.find((order) => order?._id === id);
     const newStatus = findStatus?.status;
-    setLoadingId({id, newStatus})
+    setLoadingId({ id, newStatus });
 
     try {
-      const res = await axios.put('http://localhost:3000/api/orders/' + id, {status: newStatus +1})
-      if(res.status === 200) {
-        router.replace(router.asPath);
-        setLoadingId('');
+      const res = await axios.put("http://localhost:3000/api/orders/" + id, {
+        status: newStatus + 1,
+      });
+      if (res.status === 200) {
+        refetchOrders();
+        setLoadingId("");
+        // router.replace(router.asPath);
       }
-    }
-    catch(err) {
-      setLoadingId('');
-      console.log(err) 
+    } catch (err) {
+      setLoadingId("");
+      console.log(err);
     }
   };
 
   //delete products
   const deleteProducts = async (id) => {
-    const find = products.find((p) => p?._id === id);
     try {
       const res = await axios.delete(
         "http://localhost:3000/api/products/" + id
       );
       if (res.status === 200) {
-        router.replace(router.asPath);
+        setIsModalOpen(false);
+        toast.success("Delete Success");
+        refetchProducts();
       }
     } catch (err) {
       console.log(err);
     }
+    // router.replace(router.asPath);
   };
 
   return (
     <div className="antialiased my-10 text-gray-600  px-4 md:flex justify-evenly">
-      <section >
-        <div >
+      <Toaster />
+      <DeleteModal
+        productId={productId}
+        isOpen={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        deleteProducts={deleteProducts}
+      />
+      <AddNewProduct isOpen={isOpen} setIsOpen={setIsOpen} />
+      <section>
+        <div>
           {/* <!-- Table --> */}
           <div className="w-full mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
-            <header className="px-5 py-4 border-b border-gray-100">
+            <header className="px-5 py-4 border-b border-gray-100 flex justify-between">
               <h2 className="font-semibold text-gray-800 text-center">
                 Products
               </h2>
+              <button
+                onClick={() => setIsOpen(true)}
+                className="font-semibold text-gray-800 text-center border rounded-md p-2 bg-gray-100"
+              >
+                Add New Product
+              </button>
             </header>
             <div className="p-3">
               <div className="overflow-x-auto">
@@ -102,7 +139,10 @@ const Dashboard = ({ products, orders }) => {
                           <div className="text-lg  flex gap-4 justify-center">
                             <PencilIcon className="w-6 h-6 cursor-pointer" />
                             <TrashIcon
-                              onClick={() => deleteProducts(product?._id)}
+                              onClick={() => {
+                                setProductId(product?._id);
+                                setIsModalOpen(true);
+                              }}
                               className="w-6 h-6 cursor-pointer"
                             />
                           </div>
@@ -116,8 +156,8 @@ const Dashboard = ({ products, orders }) => {
           </div>
         </div>
       </section>
-      <section >
-        <div >
+      <section>
+        <div>
           {/* <!-- Table --> */}
           <div className="w-full mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
             <header className="px-5 py-4 border-b border-gray-100">
@@ -179,15 +219,23 @@ const Dashboard = ({ products, orders }) => {
                           </div>
                         </td>
                         <td className="p-2 whitespace-nowrap flex">
-                          <div className={`text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs ${order?.status >= 3 && "hidden"}`}>
+                          <div
+                            className={`text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs ${
+                              order?.status >= 3 && "hidden"
+                            }`}
+                          >
                             Cancel
                           </div>
                           <button
-                          disabled={order?.status >= 3}
-                            onClick={()=> handleStates(order?._id)}
+                            disabled={order?.status >= 3}
+                            onClick={() => handleStates(order?._id)}
                             className="text-white font-bold px-2 w-[60px] text-center py-1 rounded-md bg-green-500 text-xs ml-2 cursor-pointer"
                           >
-                            {loadingId?.id === order?._id ? <div className="w-4 h-4 mx-auto border-4 border-dashed rounded-full animate-spin"></div> : <>{order?.status >= 3 ? "done" : "Next"}</> }
+                            {loadingId?.id === order?._id ? (
+                              <div className="w-4 h-4 mx-auto border-4 border-dashed rounded-full animate-spin"></div>
+                            ) : (
+                              <>{order?.status >= 3 ? "done" : "Next"}</>
+                            )}
                           </button>
                         </td>
                       </tr>
@@ -202,29 +250,56 @@ const Dashboard = ({ products, orders }) => {
     </div>
   );
 };
+export default Dashboard;
 
 export async function getServerSideProps(context) {
-
   const myCookie = context?.req?.cookies || "";
 
-  if(myCookie?.token !== process.env.TOKEN){
+  if (myCookie?.token !== process.env.TOKEN) {
     return {
       redirect: {
         destination: "/dashboard/login",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
+  const queryClient = new QueryClient();
 
-  const res = await axios.get("http://localhost:3000/api/products");
-  const response = await axios.get("http://localhost:3000/api/orders");
+  await queryClient.prefetchQuery("products", () =>
+    axios.get("http://localhost:3000/api/products").then((res) => res.data)
+  );
+
+  await queryClient.prefetchQuery("orders", () =>
+    axios.get("http://localhost:3000/api/orders").then((res) => res.data)
+  );
+
   return {
     props: {
-      products: res.data,
-      orders: response.data,
+      dehydratedState: dehydrate(queryClient),
     },
   };
 }
 
-export default Dashboard;
+// export async function getServerSideProps(context) {
+
+//   const myCookie = context?.req?.cookies || "";
+
+//   if(myCookie?.token !== process.env.TOKEN){
+//     return {
+//       redirect: {
+//         destination: "/dashboard/login",
+//         permanent: false,
+//       }
+//     }
+//   }
+
+//   const res = await axios.get("http://localhost:3000/api/products");
+//   const response = await axios.get("http://localhost:3000/api/orders");
+//   return {
+//     props: {
+//       products: res.data,
+//       orders: response.data,
+//     },
+//   };
+// }

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useContext, useLayoutEffect, useState } from "react";
 import { AppContext } from "./_app";
 import { useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import {
   PayPalScriptProvider,
   PayPalButtons,
@@ -14,9 +15,11 @@ const Cart = () => {
   const { cartQuantity, setCartQuantity } = useContext(AppContext);
   const [open, setOpen] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
-
   const router = useRouter();
 
+  // console.log(router.query?.data);
+
+  
   //created order
   const orderCreate = async (data) => {
     try {
@@ -24,8 +27,10 @@ const Cart = () => {
       if (res.status === 200) {
         console.log(res?.data);
         router.push(`/orders/${res?.data?._id}`);
+        toast.success('Payment Successfully Done')
       }
     } catch (err) {
+      toast.error('Something Went Wrong')
       console.log(err);
     }
   };
@@ -114,6 +119,7 @@ const Cart = () => {
 
   return (
     <div className="bg-gray-100 py-16 min-h-screen">
+      <Toaster/>
       <h1 className="mb-10 text-center text-2xl font-bold">My Cart</h1>
       <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
         <div className="rounded-lg md:w-2/3">

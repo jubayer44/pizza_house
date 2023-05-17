@@ -9,16 +9,20 @@ import { useRouter } from "next/router";
 const Navbar = () => {
   const { cartQuantity } = useContext(AppContext);
   const [isAdmin, setIsAdmin] = useState(false);
+  const tkn = process.env.NEXT_PUBLIC_TOKEN;
+  const router = useRouter();
 
-  const tkn = process.env.NEXT_PUBLIC_TOKEN
-useEffect(() => {
-  const cookies = document.cookie.split("; ");
-const tokenCookie = cookies.find((cookie) => cookie.startsWith("token="));
-const token = tokenCookie ? tokenCookie.split("=")[1] : null;
-if(token === tkn){
-  setIsAdmin(true)
-}
-}, [isAdmin])
+  useEffect(() => {
+    const cookies = document.cookie.split("; ");
+    const tokenCookie = cookies.find((cookie) => cookie.startsWith("token="));
+    const token = tokenCookie ? tokenCookie.split("=")[1] : null;
+    if (token === tkn) {
+      return setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [router.pathname]);
+
   const handleLogOut = () => {
     document.cookie = "token=; max-age=0; path=/";
   };
@@ -69,14 +73,16 @@ if(token === tkn){
               </Link>
               <Link
                 onClick={handleLogOut}
-                href="/"
-                className={`font-semibold ${!isAdmin && "hidden"}`}
+                href="/dashboard/login"
+                className={`cursor-pointer font-semibold ${
+                  !isAdmin && "hidden"
+                }`}
               >
                 Log Out
               </Link>
             </div>
           </div>
-          <Link href="/cart" className="relative">
+          <Link href={{pathname: "/cart", query: {data: "this is my data"}}} className="relative">
             <Image className="h-11 w-11 p-2" src={cartImg} alt="phoneLogo" />
             <p className="bg-white text-pink-600 rounded-full px-2 font-bold absolute -top-2 -right-2">
               {cartQuantity.length}
