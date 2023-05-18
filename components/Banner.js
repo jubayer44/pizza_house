@@ -40,12 +40,13 @@ const Banner = () => {
         height={400}
         src="/Images/arrowl.png"
         alt=""
+        priority={true}
       />
       <div>
         <div className="w-[300vw] flex transition-all duration-1000 ease-in-out" style={{transform: `translateX(${-100*slideIndex}vw)`}}>
           {images.map((img, i) => (
             <div key={i}>
-              <Image className="cursor-pointer w-[100vw] h-[80vh]" src={img} alt="" width={500} height={500} />
+              <Image className="cursor-pointer w-[100vw] h-[80vh]" src={img} alt="" width={500} height={500} priority={true}/>
             </div>
           ))}
         </div>
@@ -57,6 +58,7 @@ const Banner = () => {
         height={400}
         src="/Images/arrowr.png"
         alt=""
+        priority={true}
       />
     </div>
   );

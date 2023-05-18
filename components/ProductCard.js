@@ -6,7 +6,7 @@ const ProductCard = ({product}) => {
     return (
         <div className='my-10 hover:outline-double'>
             <div className='bg-white p-2 rounded-md shadow-xl'>
-            <Image className='mx-auto' src={product?.img} alt='' width={200} height={200}/>
+            <Image className='mx-auto w-[200px] h-[200px]' src={product?.img} alt='' width={200} height={200}/>
             <h2 className="text-xl font-bold text-center my-2">{product?.name}</h2>
             <h3 className="text-2xl  text-center text-pink-500 my-4">${product?.prices[0]}</h3>
             <p className='text-center'>{product?.des}</p>

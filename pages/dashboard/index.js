@@ -119,7 +119,7 @@ const Dashboard = ({ dehydratedState }) => {
                           <div className="flex items-center">
                             <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3">
                               <Image
-                                className="rounded-full"
+                                className="rounded-full w-[40px] h-[40px]"
                                 src={product?.img}
                                 width="40"
                                 height="40"

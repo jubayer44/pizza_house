@@ -5,7 +5,7 @@ const handlers = async (req, res) => {
 
   if (method === "POST") {
     const { userName, password } = req.body;
-    console.log(process.env.USER);
+
     if (
         userName === process.env.USER &&
       password === process.env.PASSWORD

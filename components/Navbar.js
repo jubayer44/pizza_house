@@ -7,12 +7,17 @@ import { AppContext } from "pages/_app";
 import { useRouter } from "next/router";
 
 const Navbar = () => {
-  const { cartQuantity } = useContext(AppContext);
+  const {count} = useContext(AppContext);
+  const [ cartQuantity, setCartQuantity ] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const tkn = process.env.NEXT_PUBLIC_TOKEN;
   const router = useRouter();
 
+
   useEffect(() => {
+    
+    const storedCartQuantity = JSON.parse(localStorage.getItem('cartQuantity'));
+      setCartQuantity(storedCartQuantity?.length);
     const cookies = document.cookie.split("; ");
     const tokenCookie = cookies.find((cookie) => cookie.startsWith("token="));
     const token = tokenCookie ? tokenCookie.split("=")[1] : null;
@@ -21,7 +26,7 @@ const Navbar = () => {
     } else {
       setIsAdmin(false);
     }
-  }, [router.pathname]);
+  }, [router.pathname, cartQuantity, count]);
 
   const handleLogOut = () => {
     document.cookie = "token=; max-age=0; path=/";
@@ -84,8 +89,8 @@ const Navbar = () => {
           </div>
           <Link href={{pathname: "/cart", query: {data: "this is my data"}}} className="relative">
             <Image className="h-11 w-11 p-2" src={cartImg} alt="phoneLogo" />
-            <p className="bg-white text-pink-600 rounded-full px-2 font-bold absolute -top-2 -right-2">
-              {cartQuantity.length}
+            <p className={`bg-white text-pink-600 rounded-full px-2 font-bold absolute -top-2 -right-2 ${cartQuantity || "hidden"}`}>
+              {cartQuantity}
             </p>
           </Link>
         </div>

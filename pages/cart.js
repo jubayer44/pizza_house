@@ -12,14 +12,21 @@ import { useRouter } from "next/router";
 import axios from "axios";
 
 const Cart = () => {
-  const { cartQuantity, setCartQuantity } = useContext(AppContext);
+  const { count, setCount } = useContext(AppContext);
+  const [cartQuantity, setCartQuantity] = useState([]);
   const [open, setOpen] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const router = useRouter();
 
-  // console.log(router.query?.data);
+  useEffect(() => {
+    const storedCartQuantity = JSON.parse(localStorage.getItem("cartQuantity"));
+    if (storedCartQuantity === null) {
+      setCartQuantity([]);
+    } else {
+      setCartQuantity(storedCartQuantity);
+    }
+  }, []);
 
-  
   //created order
   const orderCreate = async (data) => {
     try {
@@ -27,10 +34,10 @@ const Cart = () => {
       if (res.status === 200) {
         console.log(res?.data);
         router.push(`/orders/${res?.data?._id}`);
-        toast.success('Payment Successfully Done')
+        toast.success("Payment Successfully Done");
       }
     } catch (err) {
-      toast.error('Something Went Wrong')
+      toast.error("Something Went Wrong");
       console.log(err);
     }
   };
@@ -38,6 +45,11 @@ const Cart = () => {
   //delete from cart
   const cartDelete = (id) => {
     setCartQuantity(cartQuantity.filter((c) => c.id !== id));
+    localStorage.setItem(
+      "cartQuantity",
+      JSON.stringify(cartQuantity.filter((c) => c.id !== id))
+    );
+    setCount(count + 1);
   };
 
   //calculate total price
@@ -50,10 +62,11 @@ const Cart = () => {
   };
 
   useLayoutEffect(() => {
-    const totalPrice = calculateTotalPrice();
-    setTotalPrice(totalPrice);
-  }, []);
-
+    const price = calculateTotalPrice();
+    setTotalPrice(price);
+  }, [cartQuantity]);
+  
+  console.log(totalPrice);
   //paypal pay
   const amount = totalPrice;
   const currency = "USD";
@@ -102,7 +115,6 @@ const Cart = () => {
           onApprove={function (data, actions) {
             return actions.order.capture().then(function (details) {
               const shipping = details.purchase_units[0];
-              console.log(details);
               orderCreate({
                 customer: shipping?.shipping?.name?.full_name,
                 address: shipping?.shipping?.address?.address_line_1,
@@ -119,7 +131,7 @@ const Cart = () => {
 
   return (
     <div className="bg-gray-100 py-16 min-h-screen">
-      <Toaster/>
+      <Toaster />
       <h1 className="mb-10 text-center text-2xl font-bold">My Cart</h1>
       <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
         <div className="rounded-lg md:w-2/3">
@@ -135,6 +147,7 @@ const Cart = () => {
                   width={70}
                   height={50}
                   className=" rounded-lg w-full md:w-24"
+                  priority={true}
                 />
                 <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                   <div className="mt-5 sm:mt-0">

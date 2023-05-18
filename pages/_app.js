@@ -7,15 +7,15 @@ import { Hydrate } from "react-query/hydration";
 export const AppContext = createContext();
 
 export default function App({ Component, pageProps }) {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [cartQuantity, setCartQuantity] = useState([]);
+  const [myCart, setMyCart] = useState([]);
+  const [count, setCount] = useState(0);
 
   const queryClientRef = useRef();
   if (!queryClientRef.current) {
     queryClientRef.current = new QueryClient();
   }
 
-  const productInfo = { cartQuantity, setCartQuantity, isAdmin, setIsAdmin };
+  const productInfo = { myCart, setMyCart, count, setCount };
 
   return (
     <QueryClientProvider client={queryClientRef.current}>

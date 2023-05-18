@@ -2,7 +2,9 @@ import dbConnect from "../../../util/mongo";
 import Products from "../../../models/Products";
 
 export default async function handler(req, res) {
-    const { method, query: {id} } = req;
+    const { method, query: {id}, cookies} = req;
+    const token = cookies.token;
+    console.log(token);
   
     
   
@@ -20,6 +22,10 @@ export default async function handler(req, res) {
 
 
   if (method === "DELETE") {
+    if(!token || token !== process.env.TOKEN){
+      return res.status(401).json("Not authenticated!")
+    }
+
     try {
       const products = await Products.findByIdAndDelete(id);
       res.status(200).json(products);
