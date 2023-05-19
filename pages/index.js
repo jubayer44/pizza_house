@@ -6,7 +6,7 @@ import { dehydrate } from "react-query/hydration";
 import { useEffect } from "react";
 
 const fetchData = async () => {
-  const res = await fetch("http://localhost:3000/api/products");
+  const res = await fetch("https://pizza-house-omega.vercel.app/api/products");
   const data = await res.json();
   return data;
 };
@@ -15,7 +15,7 @@ export default function Home({ dehydratedState }) {
   // const { data } = useQuery('products', fetchData);
 
   const data = dehydratedState?.queries[0]?.state?.data;
-
+console.log(data);
   useEffect(() => {
     if (!data.length) {
       location.reload();
