@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "pages/_app";
 
 const Product = ({ d }) => {
+  console.log(process.env.NEXT_PUBLIC_URL);
   const { count, setCount } = useContext(AppContext);
   const [myCart, setMyCart] = useState([]);
   const [quantity, setQuantity] = useState(1);
@@ -17,9 +18,9 @@ const Product = ({ d }) => {
 
   //items for cart
   const cartItem = {
-    name: d.name,
-    des: d.des,
-    img: d.img,
+    name: d?.name,
+    des: d?.des,
+    img: d?.img,
     id: cartId,
     pizzaSize: size,
     extra: "",
@@ -47,7 +48,7 @@ const Product = ({ d }) => {
 
   //change pizza size
   const changeSize = (index) => {
-    const newPrice = d.prices[index] - d.prices[size];
+    const newPrice = d?.prices[index] - d?.prices[size];
     setSize(index);
     changePrice(newPrice);
   };
@@ -181,13 +182,13 @@ const Product = ({ d }) => {
 export default Product;
 
 export async function getServerSideProps({ params }) {
-  const res = await axios.get(
-    `http://localhost:3000/api/products/${params.id}`
-  );
+  const res = await axios.get(`https://pizza-house-jubayer44.vercel.app/api/products/${params.id}`);
+  // const res = await fetch(`https://pizza-house-jubayer44.vercel.app/api/products/${params.id}`)
+  // const data = await res.json();
 
   return {
     props: {
-      d: res.data,
+      d: res?.data,
     },
   };
 }

@@ -6,7 +6,7 @@ import { dehydrate } from "react-query/hydration";
 import { useEffect } from "react";
 
 const fetchData = async () => {
-  const res = await fetch("https://pizza-house-omega.vercel.app/api/products");
+  const res = await fetch(`https://pizza-house-jubayer44.vercel.app/api/products`);
   const data = await res.json();
   return data;
 };
@@ -15,14 +15,14 @@ export default function Home({ dehydratedState }) {
   // const { data } = useQuery('products', fetchData);
 
   const data = dehydratedState?.queries[0]?.state?.data;
-console.log(data);
+
   useEffect(() => {
-    if (!data.length) {
+    if (!data?.length) {
       location.reload();
     }
   }, [data]);
 
-  if (!data.length) {
+  if (!data?.length) {
     return (
       <div className="min-h-screen w-full flex justify-center items-center text-4xl font-bold">
         <div className="w-20 h-20 mx-auto border-4 border-dashed border-black rounded-full animate-spin"></div>

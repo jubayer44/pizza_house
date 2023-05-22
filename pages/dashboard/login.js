@@ -15,7 +15,8 @@ const login = () => {
   const handleLogin = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:3000/api/login", {
+      const res = await axios.post(`https://pizza-house-jubayer44.vercel.app/api/login`, {
+      // const res = await axios.post(`https://pizza-house-dev-jubayer44.vercel.app/api/login`, {
         userName,
         password,
       });
@@ -29,7 +30,7 @@ const login = () => {
       setError(err?.response?.data)
       toast.error(err?.response?.data)
       setIsLoading(false);
-      console.log(err?.response?.data);
+      console.log(err);
     }
   };
 

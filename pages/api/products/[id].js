@@ -4,8 +4,8 @@ import Products from "../../../models/Products";
 export default async function handler(req, res) {
     const { method, query: {id}, cookies} = req;
     const token = cookies.token;
-    console.log(token);
   
+    console.log(id);
     
   
     dbConnect();

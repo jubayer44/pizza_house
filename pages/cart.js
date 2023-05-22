@@ -30,7 +30,7 @@ const Cart = () => {
   //created order
   const orderCreate = async (data) => {
     try {
-      const res = await axios.post("http://localhost:3000/api/orders", data);
+      const res = await axios.post(`https://pizza-house-jubayer44.vercel.app/api/orders`, data);
       if (res.status === 200) {
         console.log(res?.data);
         router.push(`/orders/${res?.data?._id}`);
@@ -66,7 +66,6 @@ const Cart = () => {
     setTotalPrice(price);
   }, [cartQuantity]);
   
-  console.log(totalPrice);
   //paypal pay
   const amount = totalPrice;
   const currency = "USD";

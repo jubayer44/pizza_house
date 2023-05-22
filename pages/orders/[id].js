@@ -109,7 +109,7 @@ const status = order?.status;
 export default OrderPage;
 
 export async function getServerSideProps({ params }) {
-  const res = await axios.get(`http://localhost:3000/api/orders/${params.id}`)
+  const res = await axios.get(`https://pizza-house-jubayer44.vercel.app/api/orders/${params.id}`)
   return {
     props: {
       data: res?.data

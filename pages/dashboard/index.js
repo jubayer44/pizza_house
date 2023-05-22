@@ -18,12 +18,12 @@ const Dashboard = ({ dehydratedState }) => {
   const { data: productsData, refetch: refetchProducts } = useQuery(
     "products",
     () =>
-      axios.get("http://localhost:3000/api/products").then((res) => res.data)
+      axios.get(`https://pizza-house-jubayer44.vercel.app/api/products`).then((res) => res.data)
   );
   products = productsData;
 
   const { data: ordersData, refetch: refetchOrders } = useQuery("orders", () =>
-    axios.get("http://localhost:3000/api/orders").then((res) => res.data)
+    axios.get(`https://pizza-house-jubayer44.vercel.app/api/orders`).then((res) => res.data)
   );
   orders = ordersData;
 
@@ -33,7 +33,7 @@ const Dashboard = ({ dehydratedState }) => {
     setLoadingId({ id, newStatus });
 
     try {
-      const res = await axios.put("http://localhost:3000/api/orders/" + id, {
+      const res = await axios.put(`https://pizza-house-jubayer44.vercel.app/api/orders/` + id, {
         status: newStatus + 1,
       });
       if (res.status === 200) {
@@ -51,7 +51,7 @@ const Dashboard = ({ dehydratedState }) => {
   const deleteProducts = async (id) => {
     try {
       const res = await axios.delete(
-        "http://localhost:3000/api/products/" + id
+        `https://pizza-house-jubayer44.vercel.app/api/products/` + id
       );
       if (res.status === 200) {
         setIsModalOpen(false);
@@ -267,11 +267,11 @@ export async function getServerSideProps(context) {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery("products", () =>
-    axios.get("http://localhost:3000/api/products").then((res) => res.data)
+    axios.get(`https://pizza-house-jubayer44.vercel.app/api/products`).then((res) => res.data)
   );
 
   await queryClient.prefetchQuery("orders", () =>
-    axios.get("http://localhost:3000/api/orders").then((res) => res.data)
+    axios.get(`https://pizza-house-jubayer44.vercel.app/api/orders`).then((res) => res.data)
   );
 
   return {
@@ -294,8 +294,8 @@ export async function getServerSideProps(context) {
 //     }
 //   }
 
-//   const res = await axios.get("http://localhost:3000/api/products");
-//   const response = await axios.get("http://localhost:3000/api/orders");
+//   const res = await axios.get(`https://pizza-house-jubayer44.vercel.app/api/products`);
+//   const response = await axios.get(`https://pizza-house-jubayer44.vercel.app/api/orders`);
 //   return {
 //     props: {
 //       products: res.data,

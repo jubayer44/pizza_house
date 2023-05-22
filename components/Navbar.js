@@ -10,8 +10,8 @@ const Navbar = () => {
   const {count} = useContext(AppContext);
   const [ cartQuantity, setCartQuantity ] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
-  const tkn = process.env.NEXT_PUBLIC_TOKEN;
   const router = useRouter();
+  // const tkn = process.env.NEXT_PUBLIC_TOKEN;
 
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const Navbar = () => {
     const cookies = document.cookie.split("; ");
     const tokenCookie = cookies.find((cookie) => cookie.startsWith("token="));
     const token = tokenCookie ? tokenCookie.split("=")[1] : null;
-    if (token === tkn) {
+    if (token) {
       return setIsAdmin(true);
     } else {
       setIsAdmin(false);

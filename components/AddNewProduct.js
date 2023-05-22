@@ -15,7 +15,7 @@ const AddNewProduct = ({ isOpen, setIsOpen }) => {
 
   const createProduct = async (newProductData) => {
     const res = await axios.post(
-      "http://localhost:3000/api/products",
+      `https://pizza-house-jubayer44.vercel.app/api/products`,
       newProductData
     );
     toast.success("Product Successfully Added");
